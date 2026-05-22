@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Murmur</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f8fb;
+      --bg-soft: #edf2f7;
+      --ink: #111827;
+      --muted: #667085;
+      --line: #d9e1ea;
+      --paper: #ffffff;
+      --paper-soft: #f9fafb;
+      --accent: #0f766e;
+      --accent-dark: #115e59;
+      --accent-soft: #e6f5f2;
+      --warn: #be123c;
+      --near-limit: #b45309;
+      --shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(180deg, rgba(237, 242, 247, 0.9) 0, rgba(247, 248, 251, 0) 260px),
+        var(--bg);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      line-height: 1.45;
+      min-height: 100vh;
+    }
+
+    main {
+      width: min(840px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 34px 0 52px;
+    }
+
+    header {
+      align-items: end;
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 4px 2px 22px;
+      margin-bottom: 18px;
+    }
+
+    h1 {
+      margin: 0 0 4px;
+      font-size: clamp(2.4rem, 9vw, 5.4rem);
+      font-weight: 850;
+      letter-spacing: 0;
+      line-height: 0.9;
+    }
+
+    p {
+      margin: 0;
+    }
+
+    .muted {
+      color: var(--muted);
+      font-size: 1rem;
+      max-width: 36rem;
+    }
+
+    .signal {
+      align-items: center;
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
+      color: var(--muted);
+      display: inline-flex;
+      flex: 0 0 auto;
+      font-size: 0.78rem;
+      font-weight: 700;
+      gap: 7px;
+      padding: 8px 11px;
+      text-transform: uppercase;
+    }
+
+    .signal::before {
+      background: #22c55e;
+      border-radius: 50%;
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.14);
+      content: "";
+      height: 8px;
+      width: 8px;
+    }
+
+    .composer,
+    .post {
+      background: var(--paper);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      box-shadow: var(--shadow);
+    }
+
+    .composer {
+      margin-bottom: 18px;
+      padding: 16px;
+      position: sticky;
+      top: 10px;
+      z-index: 2;
+    }
+
+    textarea,
+    input {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: var(--paper-soft);
+      color: var(--ink);
+      font: inherit;
+      font-size: max(1rem, 16px);
+      resize: vertical;
+      transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+    }
+
+    textarea {
+      min-height: 118px;
+      padding: 14px;
+    }
+
+    input {
+      min-height: 44px;
+      padding: 10px 13px;
+    }
+
+    textarea:focus,
+    input:focus {
+      background: #fff;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
+      outline: 0;
+    }
+
+    button {
+      min-height: 44px;
+      border: 0;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+      cursor: pointer;
+      font: 800 0.92rem system-ui, sans-serif;
+      padding: 8px 18px;
+      transition: background 140ms ease, box-shadow 140ms ease, transform 140ms ease;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      background: var(--accent-dark);
+      box-shadow: 0 10px 22px rgba(15, 118, 110, 0.2);
+      transform: translateY(-1px);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.65;
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .composer-meta {
+      align-items: center;
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 6px;
+    }
+
+    .counter {
+      color: var(--muted);
+      font-size: 0.82rem;
+      font-weight: 700;
+    }
+
+    .counter.near {
+      color: var(--near-limit);
+      font-weight: 700;
+    }
+
+    .counter.limit {
+      color: var(--warn);
+      font-weight: 700;
+    }
+
+    .status {
+      color: var(--warn);
+      font-size: 0.88rem;
+      font-weight: 700;
+      min-height: 1.3em;
+    }
+
+    .feed {
+      display: grid;
+      gap: 14px;
+    }
+
+    .post {
+      padding: 16px;
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-bottom: 10px;
+    }
+
+    .author {
+      align-items: center;
+      color: var(--ink);
+      display: inline-flex;
+      font-size: 0.84rem;
+      font-weight: 850;
+      gap: 7px;
+    }
+
+    .author::before {
+      background: var(--accent-soft);
+      border: 1px solid rgba(15, 118, 110, 0.2);
+      border-radius: 50%;
+      content: "";
+      height: 18px;
+      width: 18px;
+    }
+
+    time {
+      color: var(--muted);
+      font-size: 0.82rem;
+    }
+
+    .content {
+      font-size: 1.02rem;
+      overflow-wrap: anywhere;
+      white-space: pre-wrap;
+    }
+
+    .comments {
+      border-left: 2px solid rgba(15, 118, 110, 0.18);
+      display: grid;
+      gap: 12px;
+      margin-top: 16px;
+      padding-left: 16px;
+    }
+
+    .comment {
+      background: var(--paper-soft);
+      border: 1px solid #e8edf3;
+      border-radius: 14px;
+      padding: 12px;
+    }
+
+    .comment:last-child {
+      padding-bottom: 12px;
+    }
+
+    .reply {
+      display: flex;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .reply input {
+      flex: 1;
+    }
+
+    .empty {
+      border: 1px dashed var(--line);
+      border-radius: 18px;
+      color: var(--muted);
+      padding: 30px 18px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.48);
+    }
+
+    @media (max-width: 700px) {
+      header {
+        align-items: start;
+        flex-direction: column;
+        gap: 12px;
+      }
+    }
+
+    @media (max-width: 560px) {
+      main {
+        width: 100%;
+        padding: 18px 10px 34px;
+      }
+
+      h1 {
+        font-size: clamp(2.4rem, 18vw, 4.2rem);
+      }
+
+      .actions,
+      .reply {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .composer,
+      .post {
+        border-radius: 16px;
+      }
+
+      .composer {
+        padding: 12px;
+        position: static;
+      }
+
+      .comments {
+        padding-left: 10px;
+      }
+
+      button {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>Murmur</h1>
+        <p class="muted">An anonymous wall for small thoughts and quiet replies.</p>
+      </div>
+      <span class="signal">Anonymous</span>
+    </header>
+
+    <section class="composer" aria-label="Drop a thought">
+      <textarea id="postContent" maxlength="500" placeholder="Leave a mark..." aria-label="Post content"></textarea>
+      <div class="composer-meta">
+        <span id="postCounter" class="counter">0 / 500</span>
+      </div>
+      <div class="actions">
+        <span id="status" class="status" aria-live="polite"></span>
+        <button id="postButton" type="button">Drop Thought</button>
+      </div>
+    </section>
+
+    <section id="feed" class="feed" aria-live="polite"></section>
+  </main>
+
+  <script>
+    const API = "http://127.0.0.1:5000/api";
+    const feed = document.querySelector("#feed");
+    const postContent = document.querySelector("#postContent");
+    const postButton = document.querySelector("#postButton");
+    const postCounter = document.querySelector("#postCounter");
+    const statusLine = document.querySelector("#status");
+    const MAX_CONTENT_LENGTH = 500;
+
+    function formatTime(value) {
+      return new Date(value.replace(" ", "T") + "Z").toLocaleString([], {
+        dateStyle: "medium",
+        timeStyle: "short"
+      });
+    }
+
+    function setStatus(message) {
+      statusLine.textContent = message || "";
+    }
+
+    function updateCounter() {
+      const count = postContent.value.length;
+      postCounter.textContent = `${count} / ${MAX_CONTENT_LENGTH}`;
+      postCounter.classList.toggle("near", count >= 400 && count < MAX_CONTENT_LENGTH);
+      postCounter.classList.toggle("limit", count >= MAX_CONTENT_LENGTH);
+    }
+
+    function shouldPauseAutoRefresh() {
+      const active = document.activeElement;
+      if (active === postContent) return true;
+
+      return Array.from(document.querySelectorAll(".reply input")).some((input) => {
+        return input === active || input.value.trim().length > 0;
+      });
+    }
+
+    async function requestJSON(url, options) {
+      const response = await fetch(url, {
+        headers: { "Content-Type": "application/json" },
+        ...options
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        throw new Error(data.error || "Request failed.");
+      }
+      return data;
+    }
+
+    function meta(entry) {
+      const row = document.createElement("div");
+      row.className = "meta";
+
+      const author = document.createElement("strong");
+      author.className = "author";
+      author.textContent = "Anonymous";
+
+      const time = document.createElement("time");
+      time.dateTime = entry.created_at;
+      time.textContent = formatTime(entry.created_at);
+
+      row.append(author, time);
+      return row;
+    }
+
+    function contentNode(text) {
+      const content = document.createElement("div");
+      content.className = "content";
+      content.textContent = text;
+      return content;
+    }
+
+    function renderComment(comment) {
+      const item = document.createElement("article");
+      item.className = "comment";
+      item.append(meta(comment), contentNode(comment.content));
+      return item;
+    }
+
+    function renderPost(post, comments) {
+      const item = document.createElement("article");
+      item.className = "post";
+      item.append(meta(post), contentNode(post.content));
+
+      const commentList = document.createElement("section");
+      commentList.className = "comments";
+      commentList.setAttribute("aria-label", "Replies");
+
+      if (comments.length) {
+        comments.forEach((comment) => commentList.append(renderComment(comment)));
+      }
+
+      const reply = document.createElement("form");
+      reply.className = "reply";
+
+      const input = document.createElement("input");
+      input.maxLength = 500;
+      input.placeholder = "Reply anonymously...";
+      input.setAttribute("aria-label", "Reply content");
+
+      const button = document.createElement("button");
+      button.type = "submit";
+      button.textContent = "Reply";
+
+      reply.append(input, button);
+      reply.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const content = input.value.trim();
+        if (!content) return;
+
+        const originalText = button.textContent;
+        button.disabled = true;
+        button.textContent = "Replying...";
+        try {
+          await requestJSON(`${API}/posts/${post.id}/comments`, {
+            method: "POST",
+            body: JSON.stringify({ content })
+          });
+          input.value = "";
+          await loadFeed();
+        } catch (error) {
+          setStatus(error.message);
+        } finally {
+          button.disabled = false;
+          button.textContent = originalText;
+        }
+      });
+
+      item.append(commentList, reply);
+      return item;
+    }
+
+    async function loadFeed() {
+      try {
+        const posts = await requestJSON(`${API}/posts`);
+        const commentsByPost = await Promise.all(
+          posts.map((post) => requestJSON(`${API}/posts/${post.id}/comments`))
+        );
+
+        feed.textContent = "";
+        if (!posts.length) {
+          const empty = document.createElement("div");
+          empty.className = "empty";
+          empty.textContent = "No murmurs yet.";
+          feed.append(empty);
+          return;
+        }
+
+        const fragment = document.createDocumentFragment();
+        posts.forEach((post, index) => {
+          fragment.append(renderPost(post, commentsByPost[index]));
+        });
+        feed.append(fragment);
+        setStatus("");
+      } catch (error) {
+        setStatus(error.message);
+      }
+    }
+
+    postButton.addEventListener("click", async () => {
+      const content = postContent.value.trim();
+      if (!content) {
+        setStatus("Content cannot be blank.");
+        return;
+      }
+
+      const originalText = postButton.textContent;
+      postButton.disabled = true;
+      postButton.textContent = "Dropping...";
+      try {
+        await requestJSON(`${API}/posts`, {
+          method: "POST",
+          body: JSON.stringify({ content })
+        });
+        postContent.value = "";
+        updateCounter();
+        await loadFeed();
+      } catch (error) {
+        setStatus(error.message);
+      } finally {
+        postButton.disabled = false;
+        postButton.textContent = originalText;
+      }
+    });
+
+    postContent.addEventListener("input", () => {
+      setStatus("");
+      updateCounter();
+    });
+
+    updateCounter();
+    loadFeed();
+    setInterval(() => {
+      if (!shouldPauseAutoRefresh()) {
+        loadFeed();
+      }
+    }, 15000);
+  </script>
+</body>
+</html>

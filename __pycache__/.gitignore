@@ -1,0 +1,9 @@
+# Ignore the local SQLite database containing test posts
+murmur.db
+
+# Ignore Python cache files
+__pycache__/
+*.pyc
+
+# Ignore local environment or OS specific files
+.DS_Store
