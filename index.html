@@ -7,55 +7,108 @@
   <style>
     :root {
       color-scheme: light;
-      --bg: #f7f8fb;
-      --bg-soft: #edf2f7;
-      --ink: #111827;
-      --muted: #667085;
-      --line: #d9e1ea;
-      --paper: #ffffff;
-      --paper-soft: #f9fafb;
-      --accent: #0f766e;
-      --accent-dark: #115e59;
-      --accent-soft: #e6f5f2;
-      --warn: #be123c;
-      --near-limit: #b45309;
-      --shadow: 0 18px 48px rgba(15, 23, 42, 0.08);
+      --bg: #eef3f8;
+      --bg-soft: #f7fafc;
+      --text: #111827;
+      --muted: #64748b;
+      --muted-strong: #334155;
+      --surface: rgba(255, 255, 255, 0.92);
+      --surface-light: #f8fbfe;
+      --field: #f8fafc;
+      --line: rgba(100, 116, 139, 0.2);
+      --line-strong: rgba(14, 165, 233, 0.3);
+      --accent: #0ea5e9;
+      --accent-deep: #0284c7;
+      --accent-soft: #e0f2fe;
+      --danger: #e11d48;
+      --warning: #b45309;
+      --radius: 8px;
+      --shadow-soft: 0 24px 70px rgba(15, 23, 42, 0.1);
+      --shadow-close: 0 14px 34px rgba(15, 23, 42, 0.09);
+      --blue-glow: 0 0 0 4px rgba(14, 165, 233, 0.12);
     }
 
     * {
       box-sizing: border-box;
     }
 
+    html {
+      min-height: 100%;
+      background: var(--bg);
+    }
+
     body {
+      min-height: 100vh;
       margin: 0;
       background:
-        linear-gradient(180deg, rgba(237, 242, 247, 0.9) 0, rgba(247, 248, 251, 0) 260px),
+        linear-gradient(180deg, rgba(224, 242, 254, 0.74), rgba(248, 250, 252, 0.96) 24rem),
+        linear-gradient(135deg, rgba(226, 232, 240, 0.8), transparent 42rem),
         var(--bg);
-      color: var(--ink);
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      line-height: 1.45;
-      min-height: 100vh;
+      color: var(--text);
+      font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 16px;
+      line-height: 1.65;
+      overflow-x: hidden;
+    }
+
+    @keyframes riseIn {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+      }
     }
 
     main {
-      width: min(840px, calc(100% - 40px));
+      width: min(980px, calc(100% - 32px));
       margin: 0 auto;
-      padding: 34px 0 52px;
+      padding: clamp(28px, 6vw, 68px) 0 72px;
+    }
+
+    .scene {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      gap: clamp(26px, 5vw, 44px);
+      align-items: center;
+      justify-items: center;
     }
 
     header {
-      align-items: end;
+      display: grid;
+      grid-template-columns: 1fr;
+      justify-items: center;
+      gap: 16px;
+      width: min(720px, 100%);
+      padding: 0;
+      text-align: center;
+    }
+
+    .header-top {
       display: flex;
-      justify-content: space-between;
-      gap: 20px;
-      padding: 4px 2px 22px;
-      margin-bottom: 18px;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
     }
 
     h1 {
-      margin: 0 0 4px;
-      font-size: clamp(2.4rem, 9vw, 5.4rem);
-      font-weight: 850;
+      margin: 0;
+      color: var(--text);
+      font-size: clamp(3.1rem, 10vw, 6.2rem);
+      font-weight: 820;
       letter-spacing: 0;
       line-height: 0.9;
     }
@@ -64,307 +117,645 @@
       margin: 0;
     }
 
-    .muted {
+    .subtitle {
+      max-width: 34rem;
       color: var(--muted);
-      font-size: 1rem;
-      max-width: 36rem;
+      font-size: clamp(1rem, 2.2vw, 1.12rem);
+      line-height: 1.7;
     }
 
     .signal {
-      align-items: center;
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: 999px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.06);
-      color: var(--muted);
       display: inline-flex;
+      width: fit-content;
       flex: 0 0 auto;
-      font-size: 0.78rem;
-      font-weight: 700;
-      gap: 7px;
-      padding: 8px 11px;
+      align-items: center;
+      min-height: 44px;
+      gap: 9px;
+      padding: 10px 15px;
+      border: 1px solid rgba(14, 165, 233, 0.24);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.78);
+      box-shadow: 0 10px 28px rgba(15, 23, 42, 0.08);
+      color: var(--muted-strong);
+      font-size: 0.76rem;
+      font-weight: 780;
+      line-height: 1;
       text-transform: uppercase;
     }
 
     .signal::before {
-      background: #22c55e;
-      border-radius: 50%;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.14);
-      content: "";
-      height: 8px;
       width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 5px rgba(14, 165, 233, 0.12);
+      content: "";
     }
 
-    .composer,
-    .post {
-      background: var(--paper);
-      border: 1px solid var(--line);
-      border-radius: 18px;
-      box-shadow: var(--shadow);
+    .stream {
+      position: relative;
+      display: grid;
+      justify-items: center;
+      width: 100%;
+      gap: clamp(22px, 4vw, 34px);
+      padding-top: 0;
     }
 
     .composer {
-      margin-bottom: 18px;
-      padding: 16px;
-      position: sticky;
-      top: 10px;
+      position: relative;
       z-index: 2;
+      width: min(720px, 100%);
+      padding: clamp(18px, 3.8vw, 30px);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      background:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.94)),
+        var(--surface);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.12);
+      overflow: visible;
+      backdrop-filter: blur(10px);
+      animation: riseIn 420ms ease both;
+    }
+
+    .composer::before {
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      background:
+        linear-gradient(135deg, rgba(14, 165, 233, 0.09), transparent 34%),
+        linear-gradient(315deg, rgba(226, 232, 240, 0.42), transparent 40%);
+      content: "";
+      pointer-events: none;
+    }
+
+    .composer::after {
+      position: absolute;
+      right: 28px;
+      bottom: 24px;
+      width: 72px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(14, 165, 233, 0.46), transparent);
+      content: "";
+      opacity: 0.34;
+    }
+
+    .composer > * {
+      position: relative;
+      z-index: 1;
     }
 
     textarea,
     input {
       width: 100%;
+      min-height: 44px;
       border: 1px solid var(--line);
-      border-radius: 14px;
-      background: var(--paper-soft);
-      color: var(--ink);
+      border-radius: 16px;
+      background: var(--field);
+      color: var(--text);
       font: inherit;
       font-size: max(1rem, 16px);
-      resize: vertical;
-      transition: border-color 140ms ease, box-shadow 140ms ease, background 140ms ease;
+      outline: none;
+      transition: border-color 160ms ease, box-shadow 160ms ease, background 160ms ease;
     }
 
     textarea {
-      min-height: 118px;
-      padding: 14px;
+      min-height: clamp(180px, 28vh, 260px);
+      padding: clamp(17px, 2.6vw, 24px);
+      resize: vertical;
+      line-height: 1.7;
+      font-size: clamp(1.05rem, 2vw, 1.22rem);
     }
 
     input {
-      min-height: 44px;
-      padding: 10px 13px;
+      padding: 11px 16px;
     }
 
     textarea:focus,
     input:focus {
+      border-color: rgba(14, 165, 233, 0.72);
       background: #fff;
-      border-color: var(--accent);
-      box-shadow: 0 0 0 4px rgba(15, 118, 110, 0.12);
-      outline: 0;
+      box-shadow: var(--blue-glow);
     }
 
-    button {
-      min-height: 44px;
-      border: 0;
-      border-radius: 999px;
-      background: var(--accent);
-      color: white;
-      cursor: pointer;
-      font: 800 0.92rem system-ui, sans-serif;
-      padding: 8px 18px;
-      transition: background 140ms ease, box-shadow 140ms ease, transform 140ms ease;
-      white-space: nowrap;
+    textarea::placeholder,
+    input::placeholder {
+      color: #94a3b8;
     }
 
-    button:hover {
-      background: var(--accent-dark);
-      box-shadow: 0 10px 22px rgba(15, 118, 110, 0.2);
-      transform: translateY(-1px);
-    }
-
-    button:disabled {
-      cursor: not-allowed;
-      opacity: 0.65;
-    }
-
+    .composer-meta,
     .actions {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 12px;
-      margin-top: 10px;
+      gap: 14px;
     }
 
     .composer-meta {
-      align-items: center;
+      margin-top: 10px;
+    }
+
+    .emoji-tools {
+      position: relative;
+      z-index: 20;
       display: flex;
-      justify-content: flex-end;
-      margin-top: 6px;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .emoji-toggle {
+      display: inline-grid;
+      place-items: center;
+      width: 44px;
+      min-width: 44px;
+      padding: 0;
+      background: #fff;
+      border: 1px solid rgba(14, 165, 233, 0.22);
+      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
+      color: var(--text);
+      font-size: 1.2rem;
+    }
+
+    .emoji-toggle:hover,
+    .emoji-toggle[aria-expanded="true"] {
+      background: var(--accent-soft);
+      box-shadow: 0 12px 28px rgba(14, 165, 233, 0.2);
+      color: var(--text);
+    }
+
+    .emoji-picker {
+      position: absolute;
+      top: calc(100% + 10px);
+      left: 0;
+      z-index: 100;
+      display: none;
+      width: min(340px, calc(100vw - 42px));
+      max-height: 430px;
+      padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.98);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, 0.18);
+      overflow: hidden;
+    }
+
+    .emoji-picker.open {
+      display: grid;
+      gap: 10px;
+    }
+
+    .emoji-search {
+      min-height: 40px;
+      border-radius: 12px;
+      font-size: 0.94rem;
+    }
+
+    .emoji-tabs {
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+      padding-bottom: 2px;
+    }
+
+    .emoji-tab {
+      min-width: 38px;
+      min-height: 36px;
+      padding: 0 10px;
+      border: 1px solid rgba(100, 116, 139, 0.16);
+      background: #f8fafc;
+      box-shadow: none;
+      color: var(--muted-strong);
+      font-size: 1rem;
+    }
+
+    .emoji-tab:hover,
+    .emoji-tab.active {
+      background: var(--accent-soft);
+      box-shadow: none;
+      color: var(--accent-deep);
+      transform: none;
+    }
+
+    .emoji-grid {
+      display: grid;
+      grid-template-columns: repeat(8, minmax(0, 1fr));
+      gap: 4px;
+      max-height: 260px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+
+    .emoji-option {
+      display: grid;
+      place-items: center;
+      min-width: 0;
+      min-height: 36px;
+      padding: 0;
+      border-radius: 10px;
+      background: transparent;
+      box-shadow: none;
+      color: var(--text);
+      font-size: 1.18rem;
+    }
+
+    .emoji-option:hover {
+      background: #e0f2fe;
+      box-shadow: none;
+      transform: none;
+    }
+
+    .emoji-empty {
+      grid-column: 1 / -1;
+      padding: 16px 8px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      text-align: center;
     }
 
     .counter {
+      margin-left: auto;
       color: var(--muted);
       font-size: 0.82rem;
-      font-weight: 700;
+      font-weight: 720;
+      letter-spacing: 0;
     }
 
     .counter.near {
-      color: var(--near-limit);
-      font-weight: 700;
+      color: var(--warning);
     }
 
     .counter.limit {
-      color: var(--warn);
-      font-weight: 700;
+      color: var(--danger);
+    }
+
+    .actions {
+      margin-top: 15px;
     }
 
     .status {
-      color: var(--warn);
+      min-height: 1.35em;
+      color: var(--danger);
       font-size: 0.88rem;
       font-weight: 700;
-      min-height: 1.3em;
+    }
+
+    button {
+      min-width: 44px;
+      min-height: 44px;
+      border: 0;
+      border-radius: 999px;
+      background: #0ea5e9;
+      box-shadow: 0 14px 30px rgba(14, 165, 233, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.22);
+      color: #fff;
+      cursor: pointer;
+      font: 780 0.92rem ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+      padding: 10px 18px;
+      transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, opacity 160ms ease;
+      white-space: nowrap;
+    }
+
+    button:hover {
+      background: #0284c7;
+      box-shadow: 0 18px 42px rgba(14, 165, 233, 0.32);
+      transform: translateY(-2px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      cursor: not-allowed;
+      opacity: 0.58;
+      transform: none;
     }
 
     .feed {
       display: grid;
-      gap: 14px;
+      justify-items: center;
+      width: 100%;
+      gap: clamp(20px, 4vw, 38px);
+      padding-bottom: 18px;
     }
 
     .post {
-      padding: 16px;
+      position: relative;
+      width: min(720px, 100%);
+      padding: clamp(18px, 3.4vw, 30px) clamp(18px, 4vw, 34px);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      background:
+        linear-gradient(145deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.84)),
+        var(--surface);
+      box-shadow: var(--shadow-close);
+      overflow: hidden;
+      animation: riseIn 360ms ease both;
+      transition: transform 170ms ease, border-color 170ms ease, box-shadow 170ms ease;
+    }
+
+    .post:hover {
+      border-color: var(--line-strong);
+      box-shadow: 0 20px 48px rgba(15, 23, 42, 0.12), 0 0 0 4px rgba(14, 165, 233, 0.06);
+      transform: translateY(-2px);
+    }
+
+    .post::before {
+      position: absolute;
+      top: 24px;
+      bottom: 24px;
+      left: 0;
+      width: 3px;
+      border-radius: 999px;
+      background: linear-gradient(180deg, #38bdf8, #0284c7);
+      box-shadow: 0 0 18px rgba(14, 165, 233, 0.24);
+      content: "";
     }
 
     .meta {
       display: flex;
       flex-wrap: wrap;
-      gap: 9px;
-      margin-bottom: 10px;
+      align-items: center;
+      gap: 8px 11px;
+      margin-bottom: 11px;
+      color: var(--muted);
     }
 
     .author {
-      align-items: center;
-      color: var(--ink);
       display: inline-flex;
-      font-size: 0.84rem;
-      font-weight: 850;
-      gap: 7px;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted-strong);
+      font-size: 0.82rem;
+      font-weight: 820;
+      line-height: 1.2;
     }
 
     .author::before {
-      background: var(--accent-soft);
-      border: 1px solid rgba(15, 118, 110, 0.2);
-      border-radius: 50%;
-      content: "";
-      height: 18px;
       width: 18px;
+      height: 18px;
+      border: 1px solid rgba(14, 165, 233, 0.24);
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 35% 35%, rgba(255, 255, 255, 0.9), transparent 13%),
+        linear-gradient(135deg, #bae6fd, var(--accent));
+      box-shadow: 0 0 0 4px rgba(14, 165, 233, 0.1);
+      content: "";
     }
 
     time {
       color: var(--muted);
-      font-size: 0.82rem;
+      font-size: 0.8rem;
+      line-height: 1.2;
     }
 
     .content {
-      font-size: 1.02rem;
+      color: #1f2937;
+      font-size: clamp(1.03rem, 1.7vw, 1.22rem);
+      line-height: 1.84;
       overflow-wrap: anywhere;
       white-space: pre-wrap;
     }
 
-    .comments {
-      border-left: 2px solid rgba(15, 118, 110, 0.18);
+    .replies {
       display: grid;
       gap: 12px;
-      margin-top: 16px;
-      padding-left: 16px;
+      margin-top: 18px;
+      padding-left: 18px;
+      border-left: 2px solid rgba(14, 165, 233, 0.18);
     }
 
-    .comment {
-      background: var(--paper-soft);
-      border: 1px solid #e8edf3;
+    .reply-item {
+      padding: 12px 14px;
+      border: 1px solid rgba(100, 116, 139, 0.16);
       border-radius: 14px;
-      padding: 12px;
+      background: rgba(248, 250, 252, 0.72);
     }
 
-    .comment:last-child {
-      padding-bottom: 12px;
+    .reply-item .meta {
+      margin-bottom: 6px;
     }
 
-    .reply {
-      display: flex;
-      gap: 8px;
-      margin-top: 14px;
+    .reply-item .author,
+    .reply-item time {
+      font-size: 0.76rem;
     }
 
-    .reply input {
-      flex: 1;
+    .reply-item .content {
+      font-size: 0.96rem;
+      line-height: 1.62;
     }
 
-    .empty {
-      border: 1px dashed var(--line);
-      border-radius: 18px;
-      color: var(--muted);
-      padding: 30px 18px;
-      text-align: center;
-      background: rgba(255, 255, 255, 0.48);
+    .reply-form {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      margin-top: 16px;
     }
 
-    @media (max-width: 700px) {
-      header {
-        align-items: start;
-        flex-direction: column;
-        gap: 12px;
-      }
+    .reply-form input {
+      border-radius: 999px;
     }
 
-    @media (max-width: 560px) {
+    .reply-form button {
+      box-shadow: none;
+      padding-inline: 16px;
+    }
+
+    @media (max-width: 820px) {
       main {
         width: 100%;
-        padding: 18px 10px 34px;
+        padding: 20px 12px 42px;
       }
-
+      .scene {
+        min-height: 0;
+      }
+      header {
+        gap: 18px;
+        padding: 2px 2px 28px;
+      }
+      .header-top {
+        align-items: flex-start;
+        flex-direction: row;
+        gap: 12px;
+      }
       h1 {
-        font-size: clamp(2.4rem, 18vw, 4.2rem);
+        font-size: clamp(3.8rem, 22vw, 6.4rem);
       }
-
-      .actions,
-      .reply {
+      .subtitle {
+        max-width: 31rem;
+        padding-right: 4px;
+      }
+      .stream {
+        gap: 24px;
+        padding-top: 0;
+      }
+      .composer {
+        border-radius: 20px;
+        padding: 16px;
+      }
+      textarea {
+        min-height: 230px;
+        border-radius: 16px;
+      }
+      .actions {
         align-items: stretch;
         flex-direction: column;
       }
-
-      .composer,
-      .post {
-        border-radius: 16px;
+      .composer-meta {
+        align-items: flex-start;
       }
-
-      .composer {
-        padding: 12px;
-        position: static;
+      .emoji-picker {
+        left: 0;
       }
-
-      .comments {
-        padding-left: 10px;
-      }
-
       button {
         width: 100%;
+      }
+      .reply-form {
+        grid-template-columns: 1fr;
+      }
+      .emoji-toggle,
+      .emoji-tab,
+      .emoji-option {
+        width: auto;
+      }
+      .status {
+        min-height: 0;
+      }
+      .feed {
+        gap: 18px;
+      }
+      .post,
+      .empty {
+        width: 100%;
+        margin-left: 0;
+      }
+      .post {
+        border-radius: 18px;
+      }
+    }
+
+    @media (max-width: 440px) {
+      main {
+        padding-inline: 10px;
+      }
+      .header-top {
+        flex-direction: column;
+      }
+      .signal {
+        min-height: 40px;
+      }
+      textarea {
+        min-height: 210px;
       }
     }
   </style>
 </head>
 <body>
   <main>
-    <header>
-      <div>
-        <h1>Murmur</h1>
-        <p class="muted">An anonymous wall for small thoughts and quiet replies.</p>
-      </div>
-      <span class="signal">Anonymous</span>
-    </header>
+    <div class="scene">
+      <header>
+        <div class="header-top">
+          <div>
+            <h1>Murmur</h1>
+          </div>
+          <span class="signal">Anonymous</span>
+        </div>
+        <p class="subtitle">Anonymous thoughts in a calm, open stream.</p>
+      </header>
 
-    <section class="composer" aria-label="Drop a thought">
-      <textarea id="postContent" maxlength="500" placeholder="Leave a mark..." aria-label="Post content"></textarea>
-      <div class="composer-meta">
-        <span id="postCounter" class="counter">0 / 500</span>
-      </div>
-      <div class="actions">
-        <span id="status" class="status" aria-live="polite"></span>
-        <button id="postButton" type="button">Drop Thought</button>
-      </div>
-    </section>
+      <div class="stream">
+        <section class="composer" aria-label="Drop an anonymous thought">
+          <textarea id="postContent" maxlength="500" placeholder="What&rsquo;s on your mind tonight?" aria-label="Post content"></textarea>
+          <div class="composer-meta">
+            <div class="emoji-tools">
+              <button id="emojiToggle" class="emoji-toggle" type="button" aria-label="Open emoji picker" aria-expanded="false">😊</button>
+              <div id="emojiPicker" class="emoji-picker" aria-label="Emoji picker">
+                <input id="emojiSearch" class="emoji-search" type="search" placeholder="Search emoji..." aria-label="Search emoji">
+                <div id="emojiTabs" class="emoji-tabs" role="tablist" aria-label="Emoji categories"></div>
+                <div id="emojiGrid" class="emoji-grid" role="listbox" aria-label="Emoji choices"></div>
+              </div>
+            </div>
+            <span id="postCounter" class="counter">0 / 500</span>
+          </div>
+          <div class="actions">
+            <span id="status" class="status" aria-live="polite"></span>
+            <button id="postButton" type="button">Drop Thought</button>
+          </div>
+        </section>
 
-    <section id="feed" class="feed" aria-live="polite"></section>
+        <section id="feed" class="feed" aria-live="polite"></section>
+      </div>
+    </div>
   </main>
 
   <script>
-    const API = "http://127.0.0.1:5000/api";
+    // --- 1. ENVIRONMENT CONFIGURATION ---
+    const LOCAL_API_BASE_URL = "/api";
+    const TUNNEL_API_BASE_URL = ""; // Dynamic target hook (e.g., "https://subdomain.loca.lt/api")
+    const API_BASE_URL = (TUNNEL_API_BASE_URL || window.MURMUR_API_BASE_URL || LOCAL_API_BASE_URL).replace(/\/$/, "");
+
+    // --- 2. SELECTORS ---
     const feed = document.querySelector("#feed");
     const postContent = document.querySelector("#postContent");
     const postButton = document.querySelector("#postButton");
     const postCounter = document.querySelector("#postCounter");
     const statusLine = document.querySelector("#status");
+    const emojiToggle = document.querySelector("#emojiToggle");
+    const emojiPicker = document.querySelector("#emojiPicker");
+    const emojiSearch = document.querySelector("#emojiSearch");
+    const emojiTabs = document.querySelector("#emojiTabs");
+    const emojiGrid = document.querySelector("#emojiGrid");
     const MAX_CONTENT_LENGTH = 500;
 
+    // --- 3. EMOJI PACKAGE ---
+    const EMOJI_PACK = [
+      {
+        name: "Smileys",
+        icon: "😊",
+        emojis: "😀 😃 😄 😁 😆 😅 😂 🤣 🥲 ☺️ 😊 😇 🙂 🙃 😉 😌 😍 🥰 😘 😗 😙 😚 😋 😛 😝 😜 🤪 🤨 🧐 🤓 😎 🥸 🤩 🥳 😏 😒 😞 😔 😟 😕 🙁 ☹️ 😣 😖 😫 😩 🥺 😢 😭 😤 😠 😡 🤬 🤯 😳 🥵 🥶 😱 😨 😰 😥 😓 🤗 🤔 🫣 🤭 🫢 🫡 🤫 🫠 🤥 😶 😶‍🌫️ 😐 😑 😬 🫨 🙄 😯 😦 😧 😮 😲 🥱 😴 🤤 😪 😮‍💨 😵 😵‍💫 🤐 🥴 🤢 🤮 🤧 😷 🤒 🤕 🤑 🤠 😈 👿 👹 👺 🤡 💩 👻 💀 ☠️ 👽 👾 🤖 🎃"
+      },
+      {
+        name: "Gestures",
+        icon: "👍",
+        emojis: "👋 🤚 🖐️ ✋ 🖖 🫱 🫲 🫳 🫴 👌 🤌 🤏 ✌️ 🤞 🫰 🤟 🤘 🤙 👈 👉 👆 🖕 👇 ☝️ 🫵 👍 👎 ✊ 👊 🤛 🤜 👏 🙌 🫶 👐 🤲 🤝 🙏 ✍️ 💅 🤳 💪 🦾 🦿 🦵 🦶 👂 🦻 👃 🧠 🫀 🫁 🦷 🦴 👀 👁️ 👅 👄 🫦"
+      },
+      {
+        name: "People",
+        icon: "🧑",
+        emojis: "👶 🧒 👦 👧 🧑 👱 👨 🧔 🧔‍♂️ 🧔‍♀️ 👨‍🦰 👨‍🦱 👨‍🦳 👨‍🦲 👩 👩‍🦰 🧑‍🦰 👩‍🦱 🧑‍🦱 👩‍🦳 🧑‍🦳 👩‍🦲 🧑‍🦲 👱‍♀️ 👱‍♂️ 🧓 👴 👵 🙍 🙎 🙅 🙆 💁 🙋 🧏 🙇 🤦 🤷 🧑‍⚕️ 👨‍⚕️ 👩‍⚕️ 🧑‍🎓 👨‍🎓 👩‍🎓 🧑‍🏫 👨‍🏫 👩‍🏫 🧑‍⚖️ 👨‍⚖️ 👩‍⚖️ 🧑‍🌾 👨‍🌾 👩‍🌾 🧑‍🍳 👨‍🍳 👩‍🍳 🧑‍🔧 👨‍🔧 👩‍🔧 🧑‍💻 👨‍💻 👩‍💻 🧑‍🎤 👨‍🎤 👩‍🎤 🧑‍🎨 👨‍🎨 👩‍🎨 🧑‍🚀 👨‍🚀 👩‍🚀 🧑‍🚒 👨‍🚒 👩‍🚒 🧕 👮 🕵️ 💂 🥷 👷 🫅 🤴 👸 👳 👲 🧙 🧚 🧛 🧜 🧝 🧞 🧟 🧌"
+      },
+      {
+        name: "Hearts",
+        icon: "💙",
+        emojis: "💋 💌 💘 💝 💖 💗 💓 💞 💕 💟 ❣️ 💔 ❤️‍🔥 ❤️‍🩹 ❤️ 🩷 🧡 💛 💚 💙 🩵 💜 🤎 🖤 🩶 🤍 💯 💢 💥 💫 💦 💨 🕳️ 💬 👁️‍🗨️ 🗨️ 🗯️ 💭 💤"
+      },
+      {
+        name: "Nature",
+        icon: "🌿",
+        emojis: "🐶 🐱 🐭 🐹 🐰 🦊 🐻 🐼 🐻‍❄️ 🐨 🐯 🦁 🐮 🐷 🐽 🐸 🐵 🙈 🙉 🙊 🐒 🐔 🐧 🐦 🐤 🐣 🐥 🦆 🦅 🦉 🦇 🐺 🐗 🐴 🦄 🫎 🐝 🪲 🐞 🦋 🐌 🐛 🪱 🐜 🕷️ 🦂 🦟 🪰 🪳 🦗 🕸️ 🐢 🐍 🦎 🦖 🦕 🐙 🦑 🦐 🦞 🦀 🪼 🐡 🐠 🐟 🐬 🐳 🐋 🦈 🦭 🐊 🐅 🐆 🦓 🦍 🦧 🦣 🐘 🦛 🦏 🐪 🐫 🦒 🦘 🦬 🐃 🐂 🐄 🫏 🐎 🐖 🐏 🐑 🦙 🐐 🦌 🐕 🐩 🦮 🐕‍🦺 🐈 🐈‍⬛ 🪽 🪶 🐓 🦃 🦤 🦚 🦜 🦢 🦩 🕊️ 🐇 🦝 🦨 🦡 🦫 🦦 🦥 🐁 🐀 🐿️ 🦔 🌵 🎄 🌲 🌳 🌴 🪵 🌱 🌿 ☘️ 🍀 🎍 🪴 🎋 🍃 🍂 🍁 🍄 🪨 🪸 🪷 🌾 💐 🌷 🌹 🥀 🪻 🪺 🪹 🌺 🌸 🌼 🌻 ☀️ 🌤️ ⛅ 🌥️ ☁️ 🌦️ 🌧️ ⛈️ 🌩️ 🌨️ ❄️ ☃️ ⛄ 🌬️ 💨 💧 💦 ☔ ☂️ 🌊 🌫️"
+      },
+      {
+        name: "Food",
+        icon: "🍕",
+        emojis: "🍏 🍎 🍐 🍊 🍋 🍌 🍉 🍇 🍓 🫐 🍈 🍒 🍑 🥭 🍍 🥥 🥝 🍅 🫒 🥑 🍆 🥔 🥕 🌽 🌶️ 🫑 🥒 🥬 🥦 🧄 🧅 🥜 🫘 🌰 🫚 🫛 🍞 🥐 🥖 🫓 🥨 🥯 🥞 🧇 🧀 🍖 🍗 🥩 🥓 🍔 🍟 🍕 🌭 🥪 🌮 🌯 🫔 🥙 🧆 🥚 🍳 🥘 🍲 🫕 🥣 🥗 🍿 原材料 🧂 🥫 🍱 🍘 🍙 🍚 🍛 🍜 🍝 🍠 🍢 🍣 🍤 🍥 🥮 🍡 🥟 🥠 🥡 🦪 🍦 🍧 🍨 🍩 🍪 🎂 🍰 🧁 🥧 🍫 🍬 🍭 🍮 🍯 🍼 🥛 ☕ 🫖 🍵 🍶 🍾 🍷 🍸 🍹 🍺 🍻 🥂 🥃 🫗 🥤 🧋 🧃 🧉 🧊 🥢 🍽️ 🍴 🥄 🔪 🫙 🏺"
+      },
+      {
+        name: "Activities",
+        icon: "🎮",
+        emojis: "⚽ 🏀 🏈 ⚾ 🥎 🎾 🏐 🏉 🥏 🎱 🪀 🏓 🏸 🏒 🏑 🥍 🏏 🪃 🥅 ⛳ 🪁 🏹 🎣 🤿 🥊 🥋 🎽 🛹 🛼 🛷 ⛸️ 🥌 🎿 ⛷️ 🏂 🪂 🏋️ 🤼 🤸 ⛹️ 🤺 🤾 🏌️ 🏇 🧘 🏄 🏊 🤽 🚣 🧗 🚵 🚴 🏆 🥇 🥈 🥉 🏅 🎖️ 🏵️ 🎗️ 🎫 🎟️ 🎪 🤹 🎭 🩰 🎨 🎬 🎤 🎧 🎼 🎹 🥁 🪘 🎷 🎺 🪗 🎸 🪕 🎻 🪈 🎲 ♟️ 🎯 🎳 🎮 🎰 🧩"
+      }
+    ].map((category) => ({
+      ...category,
+      emojis: category.emojis.split(" ")
+    }));
+
+    let activeEmojiCategory = EMOJI_PACK[0].name;
+    let focusedTextField = postContent;
+
+    // --- 4. FORMATTING UTILITIES ---
     function formatTime(value) {
+      if (!value) return "Just Now";
+      // Normalizes alternative space/ISO strings coming from backend configurations
       return new Date(value.replace(" ", "T") + "Z").toLocaleString([], {
         dateStyle: "medium",
         timeStyle: "short"
@@ -375,82 +766,141 @@
       statusLine.textContent = message || "";
     }
 
+    function rememberTextField(field) {
+      if (field && (field.tagName === "TEXTAREA" || field.tagName === "INPUT")) {
+        focusedTextField = field;
+      }
+    }
+
+    function closeEmojiPicker() {
+      emojiPicker.classList.remove("open");
+      emojiToggle.setAttribute("aria-expanded", "false");
+    }
+
+    function filterEmojiCategory(category) {
+      const query = emojiSearch.value.trim().toLowerCase();
+      if (!query) return category.emojis;
+
+      return category.emojis.filter((emoji) => {
+        return emoji.includes(query) || category.name.toLowerCase().includes(query);
+      });
+    }
+
+    // --- 5. EMOJI RENDER ARCHITECTURE ---
+    function renderEmojiPicker() {
+      emojiTabs.textContent = "";
+      emojiGrid.textContent = "";
+
+      EMOJI_PACK.forEach((category) => {
+        const tab = document.createElement("button");
+        tab.type = "button";
+        tab.className = "emoji-tab";
+        tab.classList.toggle("active", category.name === activeEmojiCategory);
+        tab.textContent = category.icon;
+        tab.title = category.name;
+        tab.setAttribute("aria-label", category.name);
+        tab.addEventListener("click", (e) => {
+          e.stopPropagation();
+          activeEmojiCategory = category.name;
+          emojiSearch.value = "";
+          renderEmojiPicker();
+        });
+        emojiTabs.append(tab);
+      });
+
+      const category = EMOJI_PACK.find((item) => item.name === activeEmojiCategory) || EMOJI_PACK[0];
+      const emojis = filterEmojiCategory(category);
+
+      if (!emojis.length) {
+        const empty = document.createElement("div");
+        empty.className = "emoji-empty";
+        empty.textContent = "No emoji found.";
+        emojiGrid.append(empty);
+        return;
+      }
+
+      emojis.forEach((emoji) => {
+        const option = document.createElement("button");
+        option.type = "button";
+        option.className = "emoji-option";
+        option.textContent = emoji;
+        option.setAttribute("aria-label", `Insert ${emoji}`);
+        option.addEventListener("click", (e) => {
+          e.stopPropagation();
+          insertEmoji(emoji);
+        });
+        emojiGrid.append(option);
+      });
+    }
+
+    function insertEmoji(emoji) {
+      const target = focusedTextField || postContent;
+      const start = target.selectionStart ?? target.value.length;
+      const end = target.selectionEnd ?? target.value.length;
+      const before = target.value.slice(0, start);
+      const after = target.value.slice(end);
+      const nextValue = `${before}${emoji}${after}`;
+      const maxLength = Number(target.maxLength);
+
+      if (Number.isFinite(maxLength) && maxLength > 0 && nextValue.length > maxLength) {
+        setStatus(`Content must be ${maxLength} characters or fewer.`);
+        return;
+      }
+
+      target.value = nextValue;
+      target.focus();
+      target.selectionStart = start + emoji.length;
+      target.selectionEnd = start + emoji.length;
+      updateCounter();
+      setStatus("");
+    }
+
     function updateCounter() {
       const count = postContent.value.length;
       postCounter.textContent = `${count} / ${MAX_CONTENT_LENGTH}`;
-      postCounter.classList.toggle("near", count >= 400 && count < MAX_CONTENT_LENGTH);
+      postCounter.classList.toggle("near", count >= 450 && count < MAX_CONTENT_LENGTH);
       postCounter.classList.toggle("limit", count >= MAX_CONTENT_LENGTH);
     }
 
-    function shouldPauseAutoRefresh() {
-      const active = document.activeElement;
-      if (active === postContent) return true;
-
-      return Array.from(document.querySelectorAll(".reply input")).some((input) => {
-        return input === active || input.value.trim().length > 0;
-      });
-    }
-
-    async function requestJSON(url, options) {
-      const response = await fetch(url, {
-        headers: { "Content-Type": "application/json" },
-        ...options
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        throw new Error(data.error || "Request failed.");
-      }
-      return data;
-    }
-
-    function meta(entry) {
-      const row = document.createElement("div");
-      row.className = "meta";
+    // --- 6. DOM COMPONENT ENGINE ---
+    function createMetaNode(entry) {
+      const metaRow = document.createElement("div");
+      metaRow.className = "meta";
 
       const author = document.createElement("strong");
       author.className = "author";
-      author.textContent = "Anonymous";
+      author.textContent = entry.alias || "Anonymous";
 
-      const time = document.createElement("time");
-      time.dateTime = entry.created_at;
-      time.textContent = formatTime(entry.created_at);
+      const timeNode = document.createElement("time");
+      const baseTime = entry.created_at || entry.timestamp;
+      timeNode.dateTime = baseTime || "";
+      timeNode.textContent = formatTime(baseTime);
 
-      row.append(author, time);
-      return row;
+      metaRow.append(author, timeNode);
+      return metaRow;
     }
 
-    function contentNode(text) {
-      const content = document.createElement("div");
-      content.className = "content";
-      content.textContent = text;
-      return content;
+    function createContentNode(entry) {
+      const contentNode = document.createElement("div");
+      contentNode.className = "content";
+      contentNode.textContent = entry.content || entry.text || "";
+      return contentNode;
     }
 
-    function renderComment(comment) {
-      const item = document.createElement("article");
-      item.className = "comment";
-      item.append(meta(comment), contentNode(comment.content));
-      return item;
+    function createReplyNode(reply) {
+      const replyNode = document.createElement("article");
+      replyNode.className = "reply-item";
+      replyNode.append(createMetaNode(reply), createContentNode(reply));
+      return replyNode;
     }
 
-    function renderPost(post, comments) {
-      const item = document.createElement("article");
-      item.className = "post";
-      item.append(meta(post), contentNode(post.content));
-
-      const commentList = document.createElement("section");
-      commentList.className = "comments";
-      commentList.setAttribute("aria-label", "Replies");
-
-      if (comments.length) {
-        comments.forEach((comment) => commentList.append(renderComment(comment)));
-      }
-
-      const reply = document.createElement("form");
-      reply.className = "reply";
+    function createReplyForm(entry) {
+      const form = document.createElement("form");
+      form.className = "reply-form";
 
       const input = document.createElement("input");
-      input.maxLength = 500;
+      input.type = "text";
+      input.maxLength = MAX_CONTENT_LENGTH;
       input.placeholder = "Reply anonymously...";
       input.setAttribute("aria-label", "Reply content");
 
@@ -458,99 +908,160 @@
       button.type = "submit";
       button.textContent = "Reply";
 
-      reply.append(input, button);
-      reply.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const content = input.value.trim();
-        if (!content) return;
+      form.append(input, button);
+      form.addEventListener("submit", (event) => handleReplySubmit(event, entry.id));
 
-        const originalText = button.textContent;
-        button.disabled = true;
-        button.textContent = "Replying...";
-        try {
-          await requestJSON(`${API}/posts/${post.id}/comments`, {
-            method: "POST",
-            body: JSON.stringify({ content })
-          });
-          input.value = "";
-          await loadFeed();
-        } catch (error) {
-          setStatus(error.message);
-        } finally {
-          button.disabled = false;
-          button.textContent = originalText;
-        }
-      });
-
-      item.append(commentList, reply);
-      return item;
+      return form;
     }
 
-    async function loadFeed() {
-      try {
-        const posts = await requestJSON(`${API}/posts`);
-        const commentsByPost = await Promise.all(
-          posts.map((post) => requestJSON(`${API}/posts/${post.id}/comments`))
-        );
+    function createPostNode(entry) {
+      const card = document.createElement("article");
+      card.className = "post";
+      card.dataset.murmurId = entry.id;
 
-        feed.textContent = "";
-        if (!posts.length) {
-          const empty = document.createElement("div");
-          empty.className = "empty";
-          empty.textContent = "No murmurs yet.";
-          feed.append(empty);
+      const contentNode = createContentNode(entry);
+      card.append(createMetaNode(entry), contentNode);
+
+      const replies = Array.isArray(entry.replies) ? entry.replies : [];
+      if (replies.length) {
+        const repliesNode = document.createElement("section");
+        repliesNode.className = "replies";
+        repliesNode.setAttribute("aria-label", "Replies");
+        replies.forEach((reply) => repliesNode.append(createReplyNode(reply)));
+        card.append(repliesNode);
+      }
+
+      if (entry.id !== undefined && entry.id !== null) {
+        card.append(createReplyForm(entry));
+      }
+      return card;
+    }
+
+    // --- 7. BACKEND NETWORK INTEGRATIONS (GET / POST) ---
+    async function fetchFeed() {
+      try {
+        const response = await fetch(`${API_BASE_URL}/murmurs`, {
+          method: 'GET',
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (!response.ok) throw new Error("Could not fetch the live stream matrix data.");
+        const data = await response.json();
+
+        feed.innerHTML = '';
+
+        if (!data || data.length === 0) {
+          const emptyNode = document.createElement("div");
+          emptyNode.className = "empty";
+          emptyNode.textContent = "The open stream is empty tonight. Leave the first thought.";
+          feed.append(emptyNode);
           return;
         }
 
-        const fragment = document.createDocumentFragment();
-        posts.forEach((post, index) => {
-          fragment.append(renderPost(post, commentsByPost[index]));
+        data.forEach(item => {
+          const postCard = createPostNode(item);
+          feed.append(postCard);
         });
-        feed.append(fragment);
-        setStatus("");
+
       } catch (error) {
-        setStatus(error.message);
+        console.error("🚨 Stream API Sync Error:", error);
+        setStatus("Unable to load thoughts from the local grid server.");
       }
     }
 
-    postButton.addEventListener("click", async () => {
+    async function handleBroadcast() {
       const content = postContent.value.trim();
       if (!content) {
-        setStatus("Content cannot be blank.");
+        setStatus("Cannot broadcast empty text packets.");
         return;
       }
 
-      const originalText = postButton.textContent;
       postButton.disabled = true;
-      postButton.textContent = "Dropping...";
+      setStatus("Broadcasting to stream grid...");
+
       try {
-        await requestJSON(`${API}/posts`, {
-          method: "POST",
-          body: JSON.stringify({ content })
+        const response = await fetch(`${API_BASE_URL}/murmurs`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: content })
         });
-        postContent.value = "";
+
+        if (!response.ok) throw new Error("Transmission rejected by server node.");
+
+        postContent.value = '';
         updateCounter();
-        await loadFeed();
+        setStatus("Thought dropped successfully.");
+        await fetchFeed(); // Auto refresh interface pool
+
       } catch (error) {
-        setStatus(error.message);
+        console.error("🚨 Broadcast Crash Failure:", error);
+        setStatus("Broadcast transmission sequence dropped.");
       } finally {
         postButton.disabled = false;
-        postButton.textContent = originalText;
+      }
+    }
+
+    async function handleReplySubmit(event, murmurId) {
+      event.preventDefault();
+
+      const form = event.currentTarget;
+      const input = form.querySelector("input");
+      const button = form.querySelector("button");
+      const content = input.value.trim();
+
+      if (!content) {
+        setStatus("Cannot send an empty reply.");
+        return;
+      }
+
+      button.disabled = true;
+      setStatus("Sending reply...");
+
+      try {
+        const response = await fetch(`${API_BASE_URL}/murmurs/${murmurId}/replies`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ content: content })
+        });
+
+        if (!response.ok) throw new Error("Reply rejected by server node.");
+
+        input.value = '';
+        setStatus("Reply sent.");
+        await fetchFeed();
+      } catch (error) {
+        console.error("Reply submission failed:", error);
+        setStatus("Reply transmission dropped.");
+      } finally {
+        button.disabled = false;
+      }
+    }
+
+    // --- 8. GLOBAL EVENT INITIALIZERS ---
+    postContent.addEventListener("input", updateCounter);
+    postContent.addEventListener("focus", () => rememberTextField(postContent));
+    postButton.addEventListener("click", handleBroadcast);
+
+    emojiToggle.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isExpanded = emojiToggle.getAttribute("aria-expanded") === "true";
+      emojiToggle.setAttribute("aria-expanded", !isExpanded);
+      emojiPicker.classList.toggle("open");
+      if (!isExpanded) renderEmojiPicker();
+    });
+
+    emojiSearch.addEventListener("input", renderEmojiPicker);
+    document.addEventListener("click", (e) => {
+      if (!emojiPicker.contains(e.target) && e.target !== emojiToggle) {
+        closeEmojiPicker();
       }
     });
 
-    postContent.addEventListener("input", () => {
-      setStatus("");
+    // Boot Environment Configuration
+    document.addEventListener('DOMContentLoaded', () => {
       updateCounter();
+      fetchFeed();
     });
-
-    updateCounter();
-    loadFeed();
-    setInterval(() => {
-      if (!shouldPauseAutoRefresh()) {
-        loadFeed();
-      }
-    }, 15000);
   </script>
 </body>
 </html>
